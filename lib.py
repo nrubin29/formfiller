@@ -1,6 +1,23 @@
 from abc import abstractmethod
 
+from selenium import webdriver
 from selenium.webdriver.support.select import Select
+
+
+class FormFiller:
+    def __init__(self, url, elements, headless=False):
+        self.url = url
+        self.elements = elements
+
+        options = webdriver.ChromeOptions()
+        options.headless = headless
+        self.driver = webdriver.Chrome(options=options)
+
+    def run(self):
+        self.driver.get(self.url)
+
+        for element in self.elements:
+            element.run(self.driver)
 
 
 class FormElement:

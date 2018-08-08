@@ -1,6 +1,4 @@
-from selenium import webdriver
-
-from lib import TextFormElement, SelectFormElement, ButtonFormElement
+from lib import TextFormElement, SelectFormElement, ButtonFormElement, FormFiller
 
 elements = [
     TextFormElement(name='firstNameTextBox', val='Noah'),
@@ -12,13 +10,7 @@ elements = [
     ButtonFormElement(id='registerButton')
 ]
 
-options = webdriver.ChromeOptions()
-# options.headless = True  # If true, it'll run in the background and not show the Chrome window.
-
-driver = webdriver.Chrome(options=options)
-driver.get('http://seleniummaster.com/seleniumformtest/registrationform.aspx')
-
-for element in elements:
-    element.run(driver)
+form_filler = FormFiller('http://seleniummaster.com/seleniumformtest/registrationform.aspx', elements)
+form_filler.run()
 
 print('Done!')
