@@ -1,16 +1,23 @@
-from lib import TextFormElement, SelectFormElement, ButtonFormElement, FormFiller
+from lib import TextFormElement, ButtonFormElement, FormFiller, FormBatch, SleepElement
 
-elements = [
-    TextFormElement(name='firstNameTextBox', val='Noah'),
-    TextFormElement(name='lastNameTextBox', val='Rubin'),
-    TextFormElement(name='emailTextBox', val='noah@my.site'),
-    TextFormElement(name='phoneTextBox', val='800-555-1234'),
-    SelectFormElement(name='booksDropDownList', val='Selenium RC'),
-    ButtonFormElement(id='osRadioButtonList_2'),
-    ButtonFormElement(id='registerButton')
-]
-
-form_filler = FormFiller('http://seleniummaster.com/seleniumformtest/registrationform.aspx', elements)
-form_filler.run()
+form_batch = FormBatch([
+    FormFiller('https://www.e-oscar-web.net/EntryController?trigger=Login', [
+        TextFormElement(id='companyId', val='RegID'),
+        TextFormElement(id='userId', val='UserID'),
+        TextFormElement(id='password', val='password'),
+        ButtonFormElement(id='securityMsgAck1'),
+        SleepElement(3),  # For demonstration purposes only. Fills in info and then waits 3 seconds.
+        ButtonFormElement(selector='.loginBtn')
+    ]),
+    FormFiller(None, [  # Note: if url is set to None, it'll use the current browser url. This is good for secondary forms.
+        TextFormElement(id='companyId', val='RegID2'),
+        TextFormElement(id='userId', val='UserID2'),
+        TextFormElement(id='password', val='password2'),
+        ButtonFormElement(id='securityMsgAck1'),
+        SleepElement(3),
+        ButtonFormElement(selector='.loginBtn')
+    ])
+])
+form_batch.run()
 
 print('Done!')
