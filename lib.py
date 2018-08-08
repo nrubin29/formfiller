@@ -7,12 +7,14 @@ from selenium.webdriver.support.select import Select
 
 
 class FormBatch:
-    def __init__(self, form_fillers, headless=False):
+    def __init__(self, url, form_fillers, headless=False):
+        self.url = url
         self.form_fillers = form_fillers
 
         options = webdriver.ChromeOptions()
         options.headless = headless
         self.driver = webdriver.Chrome(options=options)
+        self.driver.get(self.url)
 
     def run(self):
         for form_filler in self.form_fillers:
@@ -20,14 +22,10 @@ class FormBatch:
 
 
 class FormFiller:
-    def __init__(self, url, elements):
-        self.url = url
+    def __init__(self, elements):
         self.elements = elements
 
     def run(self, driver):
-        if self.url:
-            driver.get(self.url)
-
         for element in self.elements:
             element.run(driver)
 
