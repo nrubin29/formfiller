@@ -23,11 +23,29 @@ class FormBatch:
 
 class FormFiller:
     def __init__(self, elements):
-        self.elements = elements
+        self.elements = {elem.identifier: elem for elem in elements}
 
     def run(self, driver):
-        for element in self.elements:
+        for element in self.elements.values():
             element.run(driver)
+
+
+class FileFormFiller(FormFiller):
+    def __init__(self, file_name, elements):
+        super().__init__(elements)
+
+        with open(file_name) as file:
+            header, *lines = map(str.strip, file.readlines())
+            self.header = header.split(',')
+            self.lines = map(lambda line: line.split(','), lines)
+
+    def run(self, driver):
+        for line in self.lines:
+            for header, cell in zip(self.header, line):
+                print(header, cell)
+                self.elements[header].val = cell
+
+            super().run(driver)
 
 
 class FormElement:
@@ -38,6 +56,10 @@ class FormElement:
 
         if (not self.name and not self.id and not self.selector) or any([a and b for a, b in itertools.permutations([self.name, self.id, self.selector], 2)]):
             raise Exception('Must specify name xor id xor selector')
+
+    @property
+    def identifier(self):
+        return self.name if self.name else self.id if self.id else self.selector
 
     def run(self, driver):
         if self.name:
@@ -59,10 +81,10 @@ class TextFormElement(FormElement):
         super().__init__(name, id, selector)
         self.val = val
 
+    def _run(self, element):
         if not self.val:
             raise Exception('Must specify val')
 
-    def _run(self, element):
         element.send_keys(self.val)
 
 
@@ -71,10 +93,10 @@ class SelectFormElement(FormElement):
         super().__init__(name, id, selector)
         self.val = val
 
+    def _run(self, element):
         if not self.val:
             raise Exception('Must specify val')
 
-    def _run(self, element):
         Select(element).select_by_visible_text(self.val)
 
 
