@@ -30,24 +30,6 @@ class FormFiller:
             element.run(driver)
 
 
-class FileFormFiller(FormFiller):
-    def __init__(self, file_name, elements):
-        super().__init__(elements)
-
-        with open(file_name) as file:
-            header, *lines = map(str.strip, file.readlines())
-            self.header = header.split(',')
-            self.lines = map(lambda line: line.split(','), lines)
-
-    def run(self, driver):
-        for line in self.lines:
-            for header, cell in zip(self.header, line):
-                print(header, cell)
-                self.elements[header].val = cell
-
-            super().run(driver)
-
-
 class FormElement:
     def __init__(self, name=None, id=None, selector=None):
         self.name = name
