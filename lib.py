@@ -36,7 +36,7 @@ class Form:
     def fill_from_row(self, row, elements):
         elems = {element.identifier: element for element in elements}
 
-        for header, cell in zip(row.spreadsheet.header, row.line):
+        for header, cell in zip(row.spreadsheet.header, row.cells):
             elems[header].val = cell
 
         self.fill(elems.values())

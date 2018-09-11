@@ -1,14 +1,13 @@
 class Row:
-    def __init__(self, i, line, spreadsheet):
-        self.i = i
-        self.line = line
+    def __init__(self, cells, spreadsheet):
+        self.cells = cells
         self.spreadsheet = spreadsheet
 
     def set(self, column, value):
-        self.line[self.spreadsheet.header.index(column)] = value
+        self.cells[self.spreadsheet.header.index(column)] = value
 
     def to_csv(self):
-        return ','.join(self.line)
+        return ','.join(self.cells)
 
 
 class Spreadsheet:
@@ -21,7 +20,7 @@ class Spreadsheet:
         with open(file_name) as file:
             header, *lines = map(str.strip, file.readlines())
             self.header = header.split(',')
-            self.rows = list(map(lambda en: (lambda i, line: Row(i, line.split(','), self))(*en), enumerate(lines)))
+            self.rows = list(map(lambda line: Row(line.split(','), self), lines))
 
     def save(self):
         with open(self.file_name, 'w') as file:
