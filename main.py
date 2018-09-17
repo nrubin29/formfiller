@@ -25,10 +25,12 @@ for row in spreadsheet.rows:
     #  Here, we are updating the AUD column of each row to be the text of the #aud element.
     row.set('AUD', form.get_text(id='aud'))
 
+    # Because we are using fill_from_row, the elements will automatically get their values from the spreadsheet
+    # for the current row and at the column specified by the `col` field.
     form.fill_from_row(row, [
-        TextFormElement(id='companyId'),
-        TextFormElement(id='userId'),
-        TextFormElement(id='password'),
+        TextFormElement(id='companyId', col='Company ID'),
+        TextFormElement(id='userId', col='User ID'),
+        TextFormElement(id='password', col='Password'),
         ButtonFormElement(id='securityMsgAck1'),
         SleepElement(3),
         ButtonFormElement(selector='.loginBtn')

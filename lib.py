@@ -1,6 +1,6 @@
 import itertools
 import time
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
@@ -34,26 +34,22 @@ class Form:
             element._run(self.driver)
 
     def fill_from_row(self, row, elements):
-        elems = {element.identifier: element for element in elements}
+        elems_to_fill = {element.col: element for element in elements if isinstance(element, InputFormElement)}
 
         for header, cell in zip(row.spreadsheet.header, row.cells):
-            elems[header].val = cell
+            elems_to_fill[header].val = cell
 
-        self.fill(elems.values())
+        self.fill(elements)
 
     def get_text(self, name=None, id=None, selector=None):
         return _get_element(self.driver, name, id, selector).text
 
 
-class FormElement:
+class FormElement(ABC):
     def __init__(self, name=None, id=None, selector=None):
         self.name = name
         self.id = id
         self.selector = selector
-
-    @property
-    def identifier(self):
-        return self.name if self.name else self.id if self.id else self.selector
 
     def _run(self, driver):
         self.run(_get_element(driver, self.name, self.id, self.selector))
@@ -63,26 +59,38 @@ class FormElement:
         raise Exception('Not implemented')
 
 
-class TextFormElement(FormElement):
-    def __init__(self, name=None, id=None, selector=None, val=None):
+class InputFormElement(FormElement, ABC):
+    def __init__(self, name=None, id=None, selector=None, val=None, col=None):
         super().__init__(name, id, selector)
         self.val = val
+        self.col = col
+
+        if not val and not col:
+            raise Exception('Must specify val or col')
+
+    @abstractmethod
+    def run(self, element):
+        raise Exception('Not implemented')
+
+
+class TextFormElement(InputFormElement):
+    def __init__(self, name=None, id=None, selector=None, val=None, col=None):
+        super().__init__(name, id, selector, val, col)
 
     def run(self, element):
         if not self.val:
-            raise Exception('Must specify val')
+            raise Exception('Missing val')
 
         element.send_keys(self.val)
 
 
-class SelectFormElement(FormElement):
-    def __init__(self, name=None, id=None, selector=None, val=None):
-        super().__init__(name, id, selector)
-        self.val = val
+class SelectFormElement(InputFormElement):
+    def __init__(self, name=None, id=None, selector=None, val=None, col=None):
+        super().__init__(name, id, selector, val, col)
 
     def run(self, element):
         if not self.val:
-            raise Exception('Must specify val')
+            raise Exception('Missing val')
 
         Select(element).select_by_visible_text(self.val)
 
