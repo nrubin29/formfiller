@@ -1,9 +1,12 @@
 import itertools
 import time
 from abc import abstractmethod, ABC
+from contextlib import contextmanager
 
 from selenium import webdriver
+from selenium.webdriver.support.expected_conditions import staleness_of
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 def _get_element(driver, name, id, selector):
@@ -27,6 +30,7 @@ class Form:
         options = webdriver.ChromeOptions()
         options.headless = headless
         self.driver = webdriver.Chrome(options=options)
+        self.driver.implicitly_wait(3)
         self.driver.get(self.url)
 
     def fill(self, elements):
@@ -43,6 +47,11 @@ class Form:
 
     def get_text(self, name=None, id=None, selector=None):
         return _get_element(self.driver, name, id, selector).text
+
+    @contextmanager
+    def wait_for_element_destroy(self, element, timeout=30):
+        old_elem = _get_element(self.driver, element.name, element.id, element.selector)
+        yield WebDriverWait(self.driver, timeout).until(staleness_of(old_elem))
 
 
 class FormElement(ABC):
