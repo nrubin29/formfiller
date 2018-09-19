@@ -4,9 +4,7 @@ from abc import abstractmethod, ABC
 from contextlib import contextmanager
 
 from selenium import webdriver
-from selenium.webdriver.support.expected_conditions import staleness_of
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.wait import WebDriverWait
 
 
 def _get_element(driver, name, id, selector):
@@ -49,9 +47,10 @@ class Form:
         return _get_element(self.driver, name, id, selector).text
 
     @contextmanager
-    def wait_for_element_destroy(self, element, timeout=30):
-        old_elem = _get_element(self.driver, element.name, element.id, element.selector)
-        yield WebDriverWait(self.driver, timeout).until(staleness_of(old_elem))
+    def frame(self, id):
+        self.driver.switch_to.frame(self.driver.find_element_by_id(id))
+        yield
+        self.driver.switch_to.default_content()
 
 
 class FormElement(ABC):

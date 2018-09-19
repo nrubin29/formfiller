@@ -18,6 +18,11 @@ form.fill([
     ButtonFormElement(selector='.loginBtn')
 ])
 
+with form.frame('topFrame'):
+    form.fill([
+        ButtonFormElement(id='AUDButton')
+    ])
+
 # Clicking the .loginBtn will cause the form to submit and we'll be navigated to a new page.
 # Now we want to submit the form a bunch of times. Let's use our spreadsheet.
 for row in spreadsheet.rows:
