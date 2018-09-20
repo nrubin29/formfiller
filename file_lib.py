@@ -3,8 +3,8 @@ class Row:
         self.cells = cells
         self.spreadsheet = spreadsheet
 
-    def set(self, column, element):
-        self.cells[self.spreadsheet.header.index(column)] = element.text
+    def set(self, column, value):
+        self.cells[self.spreadsheet.header.index(column)] = value
 
     def to_csv(self):
         return ','.join(self.cells)

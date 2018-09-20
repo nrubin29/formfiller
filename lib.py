@@ -79,6 +79,9 @@ class FormElement(ABC):
     def text(self):
         return self.element.text
 
+    def attribute(self, name):
+        return self.element.get_attribute(name)
+
     @abstractmethod
     def run(self):
         pass

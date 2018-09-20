@@ -28,7 +28,7 @@ with form.frame('topFrame'):
 for row in spreadsheet.rows:
     #  We can update the spreadsheet with data from the form.
     #  Here, we are updating the AUD column of each row to be the text of the #aud element.
-    row.set('AUD', form.select(id='aud'))
+    row.set('AUD', form.select(id='aud').text)
 
     # Because we are using fill_from_row, the elements will automatically get their values from the spreadsheet
     # for the current row and at the column specified by the `col` field.
